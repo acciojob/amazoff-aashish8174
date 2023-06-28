@@ -9,10 +9,10 @@ import java.util.Map;
 
 @Repository
 public class RepositoryLayer {
-    private HashMap<String,Order> orderDB = new HashMap<>();
-    private HashMap<String,DeliveryPartner> partnerDB = new HashMap<>();
-    private HashMap<String,DeliveryPartner> order_partnerPairDB = new HashMap<>(); // id->orderId
-    private HashMap<String, List<String>> partner_orderDB = new HashMap<>();// id-> partnerId
+    private Map<String,Order> orderDB = new HashMap<>();
+    private Map<String,DeliveryPartner> partnerDB = new HashMap<>();
+    private Map<String,String> order_partnerPairDB = new HashMap<>(); // id->orderId & id partner
+    private Map<String, List<String>> partner_orderDB = new HashMap<>();// id-> partnerId
 
     public void add_order(Order order) {
         orderDB.put(order.getId(),order);
@@ -28,7 +28,7 @@ public class RepositoryLayer {
     }
 
     public void order_partnerPair(String orderId, String partnerId) {
-        order_partnerPairDB.put(orderId,new DeliveryPartner(partnerId));//
+        order_partnerPairDB.put(orderId,partnerId);//
         if(partner_orderDB.containsKey(partnerId)){   // assign order to partnerId
             List<String> a = partner_orderDB.get(partnerId);
             a.add(orderId);
@@ -39,6 +39,8 @@ public class RepositoryLayer {
                    firstOrder.add(orderId);
             partner_orderDB.put(partnerId,firstOrder);
         }
+        (partnerDB.get(partnerId)).setNumberOfOrders(partner_orderDB.get(partnerId).size());// setting number of orders to delivary partner
+
     }
 
     public Order get_order_by_id(String orderId) {
@@ -72,9 +74,14 @@ public class RepositoryLayer {
     public List<String> get_all_orders() {
         List<String> allOrders = new ArrayList<>();
         // traversing on all key and adding it to list
-       for(Map.Entry<String,Order> entry : orderDB.entrySet()){
-           allOrders.add(entry.getKey());
-       }
+
+        for(String ordr:orderDB.keySet()){
+            allOrders.add(ordr);
+        }
+       // another way
+//        for(Map.Entry<String,Order> entry : orderDB.entrySet()){
+//           allOrders.add(entry.getKey());
+//       }
        return allOrders;
     }
 
@@ -83,7 +90,9 @@ public class RepositoryLayer {
     }
 
     public Integer get_orders_left_after_giventime_byPartnerId(String time, String partnerId) {
-        int Time = Integer.parseInt(time);
+        int t1  = Integer.parseInt(time.substring(0,2));
+        int t2  = Integer.parseInt(time.substring(3));
+        int Time =t1*60+t2;;
         List<String> listOfOrders = partner_orderDB.get(partnerId);
         int totalLeft = 0;
         for (String orderId :listOfOrders){
@@ -101,30 +110,33 @@ public class RepositoryLayer {
             int t = orderDB.get(orderId).getDeliveryTime();
             if(t>Time) Time=t;
         }
-        String t1 = Time/60+":"+Time%60;
+        String hh =String.valueOf (Time/60);
+        String mm = String.valueOf(Time%60);
+        if(hh.length()<2){
+            hh="0"+hh;
+        }
+        if(mm.length()<2){
+            mm="0"+mm;
+        }
+        String t1 =hh+":"+mm;
 
         return t1;//has to be updated
     }
 
     public void delete_partner_by_id(String partnerId) {
         partnerDB.remove(partnerId);
-        for(Map.Entry<String,DeliveryPartner> entry:order_partnerPairDB.entrySet()){
-           DeliveryPartner d = entry.getValue();
-
-           if(d.getId().equals(partnerId)){
-               String id = entry.getKey();
-               order_partnerPairDB.remove(id);
-           }
-        }
+        List<String> order = partner_orderDB.get(partnerId);
         partner_orderDB.remove(partnerId);
+        for (String id:order){ // removing orders pair with partner id given
+            order_partnerPairDB.remove(id);
+        }
     }
 
     public void delete_order_byId(String orderId) {
         orderDB.remove(orderId);
+        String partnerId = order_partnerPairDB.get(orderId);
         order_partnerPairDB.remove(orderId);
-        for(Map.Entry<String ,List<String>> entry:partner_orderDB.entrySet()){
-            List<String> id = entry.getValue();
-            id.remove(Integer.valueOf(orderId));
-        }
+        partner_orderDB.get(partnerId).remove(orderId);
+        partnerDB.get(partnerId).setNumberOfOrders(partner_orderDB.get(partnerId).size());
     }
 }
