@@ -31,7 +31,7 @@ public class ServiceLayer {
         return repositoryLayer.get_partner_by_id(partnerId);
     }
 
-    public Integer get_order_count_byPartnerId(String partnerId) {
+    public int get_order_count_byPartnerId(String partnerId) {
         return repositoryLayer. get_order_count_byPartnerId(partnerId);
     }
 
@@ -43,11 +43,11 @@ public class ServiceLayer {
         return repositoryLayer.get_all_orders();
     }
 
-    public Integer count_unassined_orders() {
+    public int count_unassined_orders() {
         return repositoryLayer.count_unassined_orders();
     }
 
-    public Integer get_orders_left_after_giventime_byPartnerId(String time, String partnerId) {
+    public int get_orders_left_after_giventime_byPartnerId(String time, String partnerId) {
         return repositoryLayer.get_orders_left_after_giventime_byPartnerId(time,partnerId);
     }
 

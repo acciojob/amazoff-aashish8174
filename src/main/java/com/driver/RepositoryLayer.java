@@ -57,18 +57,17 @@ public class RepositoryLayer {
         return null;
     }
 
-    public Integer get_order_count_byPartnerId(String partnerId) {
-        if (partner_orderDB.containsKey(partnerId)){
+    public int get_order_count_byPartnerId(String partnerId) {
+
             return partner_orderDB.get(partnerId).size();
-        }
-        return 0;
+
     }
 
     public List<String> get_orders_by_partnerId(String partnerId) {
-        if(partner_orderDB.containsKey(partnerId)){
+
             return partner_orderDB.get(partnerId);
-        }
-        return null;
+
+
     }
 
     public List<String> get_all_orders() {
@@ -85,11 +84,12 @@ public class RepositoryLayer {
        return allOrders;
     }
 
-    public Integer count_unassined_orders() {
+    public int count_unassined_orders() {
+
         return orderDB.size()-order_partnerPairDB.size();
     }
 
-    public Integer get_orders_left_after_giventime_byPartnerId(String time, String partnerId) {
+    public int get_orders_left_after_giventime_byPartnerId(String time, String partnerId) {
         int t1  = Integer.parseInt(time.substring(0,2));
         int t2  = Integer.parseInt(time.substring(3));
         int Time =t1*60+t2;;
