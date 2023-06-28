@@ -101,7 +101,9 @@ public class RepositoryLayer {
             int t = orderDB.get(orderId).getDeliveryTime();
             if(t>Time) Time=t;
         }
-        return Time+"";//has to be updated
+        String t1 = Time/60+":"+Time%60;
+
+        return t1;//has to be updated
     }
 
     public void delete_partner_by_id(String partnerId) {
